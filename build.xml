@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="OCLator" basedir="." default="all">
+        <property file="build.properties"/>
+        <target name="clean">
+                <delete dir="${build.dir}"/>
+                <delete dir="${dist.dir}/${ant.project.name}.jar"/>
+        </target>
+	<target name="compile">
+		<mkdir dir="${build.dir}"/>
+		<javac srcdir="${src.dir}" destdir="${build.dir}" encoding="UTF-8"/>
+	</target>
+        <target name="create-jar" depends="compile">
+      		<mkdir dir="${dist.dir}"/>
+                <jar destfile="${dist.dir}/${ant.project.name}.jar" basedir="${build.dir}">
+			<manifest>
+				<attribute name="Main-Class" value="${main-class}"/>
+			</manifest>
+		</jar>
+	</target>
+ 	<target name="doc">
+ 		<javadoc destdir="${build.dir}/docs" author="true" windowTitle="OCLator" sourcepath="${src.dir}" charset="UTF-8" docencoding="UTF-8" Encoding="UTF-8"/>
+ 		<zip destfile="${dist.dir}/${ant.project.name}-doc.zip" basedir="${build.dir}/docs"/>
+	</target>
+	<target name="livrable_zip">
+		<zip level="9" destfile="${dist.dir}/Projet_3_Plume.zip" basedir="." includes="${src.dir}/**, ${tests.dir}/**, build.xml, build.properties, libs/**"/>
+	</target>
+	<target name="all" depends="clean, doc, create-jar, livrable_zip"/>
+ </project>
