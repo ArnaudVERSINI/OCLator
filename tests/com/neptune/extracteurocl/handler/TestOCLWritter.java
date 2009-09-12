@@ -7,9 +7,11 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.neptune.extracteurocl.control.OCLOneFileByClassifierWritter;
 import com.neptune.extracteurocl.control.OCLOneFileWritter;
 import com.neptune.extracteurocl.control.OCLStringWritter;
 import com.neptune.extracteurocl.control.OCLWritter;
@@ -20,12 +22,9 @@ import com.neptune.extracteurocl.model.EOperation;
 import com.neptune.extracteurocl.model.EPackages;
 import com.neptune.extracteurocl.model.EParameter;
 import com.neptune.extracteurocl.model.OCLRequest;
+import com.neptune.extracteurocl.util.DirectoryUtil;
 
 public class TestOCLWritter {
-	
-	//private static final String BASE_DIRECTORY = "C:\\temp\\Plume\\";
-	//private static final String FILE_NAME = BASE_DIRECTORY + "sortie.ocl"; 
-
 	private EPackages pack;
 	private OCLRequest ocl;
 	
@@ -94,6 +93,31 @@ public class TestOCLWritter {
 		assertEquals(
 				OclWriterUtil.getDefaultResult().trim(),
 				allLines.trim());
+	}
+	
+	@Test
+	public void oclMultipleFilesWriter() throws IOException {
+		File tempFile = DirectoryUtil.createTempDirectory("PlumeOneFile", "dir");
+		final OCLOneFileByClassifierWritter writter = new OCLOneFileByClassifierWritter(pack, tempFile.getAbsolutePath());
+		writter.attachFileExist(new Observer<FileExistEvent>() {
+			@Override
+			public void update(FileExistEvent event) {
+				Assert.fail();
+			}
+		});
+		writter.saveOCLs();
+		writter.dispose();
+		BufferedReader reader = new BufferedReader(new FileReader(tempFile.getAbsolutePath() + File.separator + "titi.ocl"));
+		
+		String result = "";
+		String allLines = "";
+		while((result = reader.readLine()) != null) {
+			allLines += "\n" + result;
+		}
+		assertEquals(
+				OclWriterUtil.getDefaultResult().trim(),
+				allLines.trim());
+
 	}
 
 	@Test
